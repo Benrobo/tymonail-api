@@ -1,4 +1,4 @@
-# API Starter Kit.
+# Tymonial GraphQL Backend
 
 Start your backend api services with minimal efforts using `Nodejs` `Expressjs` `Postgresql` `Prisma ORM`
 
