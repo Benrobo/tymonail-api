@@ -1,3 +1,14 @@
+# Node Modules
+
 /node_modules
 
-/dist
+# ENV
+
+# development env
+.env
+
+/build
+
+# prisma schema/migration
+
+/prisma/migrations

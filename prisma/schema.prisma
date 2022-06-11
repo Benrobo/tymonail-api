@@ -7,28 +7,37 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-}
-
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
-}
-
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
+  id           String      @id @unique
+  email        String      @unique
+  name         String
+  hash         String
+  refreshToken String?
+  templates    Templates[]
+  createdAt    DateTime    @default(now())
+
+  @@map(name: "user")
+}
+
+model Templates {
+  id        String   @id
+  title     String
+  tmp_id    String   @unique
+  userId    User     @relation(fields: [id], references: [id])
+  form      Form?
+  createdAt DateTime @default(now())
+}
+
+model Form {
+  id         String    @id
+  formId     String    @unique
+  userId     String
+  templateId Templates @relation(fields: [id], references: [tmp_id])
+  profileImg String?
+  username   String
+  userCareer String?
+  completed  Boolean
+
+  // @@id([id, collectionId])
+  @@map(name: "form")
 }
