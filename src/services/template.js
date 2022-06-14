@@ -35,22 +35,42 @@ export default class Templates {
             }
 
             try {
+
+                const templateId = genId()
+
                 const templateData = {
-                    id: genId(),
+                    id: templateId,
                     name,
                     userId,
                 }
 
-                await prismaDB.templates.create({ data: templateData })
+                // create template form data
+                const templateformData = {
+                    id: genId(),
+                    userId,
+                    templateId,
+                    heading: "Feedback Form",
+                    subHeading: "Your feedback is highly appreciated",
+                    profileImg: false,
+                    username: true,
+                    userCareer: false,
+                    ratings: true,
+                }
 
-                const allTemp = await prismaDB.templates.findMany({
+                await prismaDB.templates.create({ data: templateData })
+                await prismaDB.form.create({ data: templateformData })
+
+                const allTempData = await prismaDB.templates.findMany({
                     where: {
                         userId
+                    },
+                    include: {
+                        form: true
                     }
                 })
 
 
-                return sendResponse(res, 200, false, "Templates successfully created.", allTemp)
+                return sendResponse(res, 200, false, "Templates successfully created.", allTempData)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }
@@ -83,24 +103,17 @@ export default class Templates {
 
             try {
 
-                // const allTemplates = await prismaDB.templates.findMany({
-                //     where: {
-                //         userId
-                //     }
-                // })
-
-                const allTemp = await prismaDB.templates.findMany({
+                const allTempData = await prismaDB.templates.findMany({
                     where: {
                         userId
+                    },
+                    include: {
+                        form: true
                     }
                 })
 
-                const packedData = {
-                    templates: allTemp
-                }
 
-
-                return sendResponse(res, 200, false, "fetching templates successfully created.", packedData)
+                return sendResponse(res, 200, false, "fetching templates successfully created.", allTempData)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }

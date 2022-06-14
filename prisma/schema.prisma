@@ -21,9 +21,9 @@ model User {
 
 model Templates {
   id        String   @id
-  name     String
+  name      String
   userId    String
-  users    User     @relation(fields: [userId], references: [id])
+  users     User     @relation(fields: [userId], references: [id])
   form      Form?
   createdAt DateTime @default(now())
 
@@ -32,13 +32,15 @@ model Templates {
 
 model Form {
   id         String    @id
-  templateId     String    @unique
-  userId     String
-  templates Templates @relation(fields: [templateId], references: [id])
-  profileImg String?
-  username   String
-  userCareer String?
-  completed  Boolean
+  templateId String    @unique
+  userId     String    @unique
+  heading    String?
+  subHeading String?
+  profileImg Boolean?  @default(dbgenerated("false"))
+  username   Boolean?  @default(dbgenerated("false"))
+  userCareer Boolean?  @default(dbgenerated("false"))
+  ratings    Boolean?  @default(dbgenerated("true"))
+  templates  Templates @relation(fields: [templateId], references: [id])
 
   // @@id([id, collectionId])
   @@map(name: "form")

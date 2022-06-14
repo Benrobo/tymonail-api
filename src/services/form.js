@@ -7,27 +7,24 @@ const prismaDB = new PrismaClient()
 
 export default class TemplateForm {
 
-    async add(res, payload) {
+    async update(res, payload) {
         if (res === undefined) {
             throw new Error("Expected res object but got undefined")
         }
 
         if (Object.entries(payload).length > 0) {
 
-            const { title, description, userId, templateId } = payload;
+            const { heading, subHeading, profileImg, username, userCareer, ratings, userId, templateId, templateFormId } = payload;
 
-            if (title === undefined || title === "") {
-                return sendResponse(res, 400, true, "title cant be blank.")
-            }
-            if (description === undefined || description === "") {
-                return sendResponse(res, 400, true, "description cant be empty.")
-            }
             if (userId === undefined || userId === "") {
                 return sendResponse(res, 400, true, "userId cant be empty.")
             }
             if (templateId === undefined || templateId === "") {
                 return sendResponse(res, 400, true, "templateId cant be empty.")
             }
+            if (templateFormId === undefined || templateFormId === "") {
+                return sendResponse(res, 400, true, "templateFormId cant be empty.")
+            }
 
             // check if user with that ID is valid
             const userExists = await prismaDB.user.findMany({
@@ -37,166 +34,54 @@ export default class TemplateForm {
             })
 
             if (userExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to add tasks, user doesnt exist with that ID.")
+                return sendResponse(res, 404, true, "Failed to update template form, user doesnt exist with that ID.")
             }
 
             // check if collection with that ID exists
-            const collectionExists = await prismaDB.collections.findMany({
+            const templateExists = await prismaDB.templates.findMany({
                 where: {
-                    id: collectionId
+                    id: templateId
                 }
             })
 
-            if (collectionExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to add tasks, no collection was found with that ID.")
+            if (templateExists.length === 0) {
+                return sendResponse(res, 404, true, "Failed to update template form, no template was found with that ID.")
             }
 
+            const validHeading = heading === undefined || heading === "" ? "Feedback Form" : heading;
+            const validSubHeading = subHeading === undefined || subHeading === "" ? "Your feedback is highly appreciated" : subHeading;
+            const validProfileImage = profileImg === undefined || typeof profileImg !== "boolean" ? false : profileImg;
+            const validUsername = username === undefined || typeof username !== "boolean" ? false : username;
+            const validUserCareer = userCareer === undefined || typeof userCareer !== "boolean" ? false : userCareer;
+            const validRatings = ratings === undefined || typeof ratings !== "boolean" ? false : ratings;
+
             try {
-                const tasksData = {
-                    id: genId(),
+                const formData = {
+                    id: templateFormId,
                     userId,
-                    collectionId,
-                    title,
-                    description,
-                    completed: false
+                    templateId,
+                    heading: validHeading,
+                    subHeading: validSubHeading,
+                    profileImg: validProfileImage,
+                    username: validUsername,
+                    userCareer: validUserCareer,
+                    ratings: validRatings,
                 }
 
-                await prismaDB.tasks.create({ data: tasksData })
-
-                const allTasks = await prismaDB.tasks.findMany({
+                await prismaDB.form.update({
+                    data: formData,
                     where: {
-                        userId
+                        id: templateFormId
                     }
                 })
 
-                const tasksBasedOnCollectionId = allTasks.filter((list) => list.collectionId === collectionId)
-
-                return sendResponse(res, 200, false, "Tasks successfully added.", tasksBasedOnCollectionId)
-            } catch (err) {
-                return sendResponse(res, 500, true, err.message)
-            }
-        }
-    }
-
-    async getTasks(res, payload) {
-        if (res === undefined) {
-            throw new Error("Expected res object but got undefined")
-        }
-
-        if (Object.entries(payload).length > 0) {
-
-            const { userId, collectionId } = payload;
-
-            if (userId === undefined || userId === "") {
-                return sendResponse(res, 400, true, "userId cant be empty.")
-            }
-            if (collectionId === undefined || collectionId === "") {
-                return sendResponse(res, 400, true, "collectionId cant be empty.")
-            }
-
-            // check if user with that ID is valid
-            const userExists = await prismaDB.user.findMany({
-                where: {
-                    id: userId
-                }
-            })
-
-            if (userExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to fetch tasks, user doesnt exist with that ID.")
-            }
-
-            try {
-
-                const allTasks = await prismaDB.tasks.findMany({
+                const templateForm = await prismaDB.form.findMany({
                     where: {
-                        userId
+                        id: templateFormId
                     }
                 })
 
-                const filteredData = allTasks.filter((list) => list.collectionId === collectionId)
-
-                return sendResponse(res, 200, false, "fetching tasks successfully created.", filteredData)
-            } catch (err) {
-                return sendResponse(res, 500, true, err.message)
-            }
-        }
-    }
-
-    async completeTask(res, payload) {
-        if (res === undefined) {
-            throw new Error("Expected res object but got undefined")
-        }
-
-        if (Object.entries(payload).length > 0) {
-
-            const { userId, taskId, collectionId, completed } = payload;
-
-            if (userId === undefined || userId === "") {
-                return sendResponse(res, 400, true, "userId cant be empty.")
-            }
-            if (taskId === undefined || taskId === "") {
-                return sendResponse(res, 400, true, "taskId cant be empty.")
-            }
-            if (collectionId === undefined || collectionId === "") {
-                return sendResponse(res, 400, true, "collectionId cant be empty.")
-            }
-            if (completed === undefined || completed === "") {
-                return sendResponse(res, 400, true, "completed cant be empty.")
-            }
-
-            // check if user with that ID is valid
-            const userExists = await prismaDB.user.findMany({
-                where: {
-                    id: userId
-                }
-            })
-
-            if (userExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to complete tasks, user doesnt exist with that ID.")
-            }
-
-            // check if collection with that ID exists
-            const collectionExists = await prismaDB.collections.findMany({
-                where: {
-                    id: collectionId
-                }
-            })
-
-            if (collectionExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to complete tasks, no collection was found with that task.")
-            }
-
-            // check if task exists
-            const taskExists = await prismaDB.tasks.findMany({
-                where: {
-                    id: taskId
-                }
-            })
-
-            if (taskExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to complete tasks, no task was found with that ID.")
-            }
-
-            try {
-                const updatedTasksData = {
-                    completed
-                }
-
-                await prismaDB.tasks.update({
-                    where: {
-                        id: taskId
-                    },
-                    data: updatedTasksData
-                })
-
-                const allTasks = await prismaDB.tasks.findMany({
-                    where: {
-                        userId,
-                        collectionId
-                    }
-                })
-
-                return sendResponse(res, 200, false, "Tasks successfully added.", allTasks)
+                return sendResponse(res, 200, false, "Template Form successfully updated.", templateForm)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }

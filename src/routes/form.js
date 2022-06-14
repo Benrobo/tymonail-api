@@ -1,43 +1,23 @@
 import express from "express"
 import sendResponse from "../helpers/response";
-import Tasks from "../services/tasks";
 import { isLoggedIn } from "../middlewares/auth"
+import TemplateForm from "../services/form";
 
 
 
 const router = express.Router()
 
-const Task = new Tasks()
+const TmpForm = new TemplateForm()
 
-export const addTasks = router.post("/addTasks", isLoggedIn, (req, res) => {
+router.put("/updateForm", isLoggedIn, (req, res) => {
     const payload = req.body;
 
     if (Object.entries(payload).length === 0) {
-        return sendResponse(res, 500, true, "Adding of Tasks failed: expected valid payload")
+        return sendResponse(res, 500, true, "updating of template form failed: expected valid payload")
     }
 
-    return Task.add(res, payload)
+    return TmpForm.update(res, payload)
 
 })
 
-export const getTasks = router.post("/getTasks", isLoggedIn, (req, res) => {
-    const payload = req.body;
-
-    if (Object.entries(payload).length === 0) {
-        return sendResponse(res, 500, true, "getting of Tasks failed: expected valid payload")
-    }
-
-    return Task.getTasks(res, payload)
-
-})
-
-export const completeTask = router.put("/completeTask", isLoggedIn, (req, res) => {
-    const payload = req.body;
-
-    if (Object.entries(payload).length === 0) {
-        return sendResponse(res, 500, true, "Adding of Tasks failed: expected valid payload")
-    }
-
-    return Task.completeTask(res, payload)
-
-})
+export default router

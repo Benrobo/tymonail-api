@@ -8,6 +8,7 @@ import { customlimiter } from "./middlewares/rateLimiting"
 // import { AUTH_CLIENT_ID, MAX_API_REQUEST } from "./config"
 import authenticateUsers from "./routes/auth"
 import templatesRoute from "./routes/templates"
+import templatesFormRoute from './routes/form'
 
 
 const app = express()
@@ -16,9 +17,6 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json({ limit: "50mb" }))
 app.use(bodyParser.urlencoded({ extended: false }))
-
-// router  middlewares
-
 app.use(customlimiter)
 
 // user
@@ -26,10 +24,10 @@ app.use("/api/auth", authenticateUsers)
 
 // templates
 app.use("/api/templates", templatesRoute)
-// // tasks
-// app.use("/api/tasks", addTasks)
-// app.use("/api/tasks", getTasks)
-// app.use("/api/tasks", completeTask)
+
+// template form
+app.use("/api/templates/form", templatesFormRoute)
+
 // // exams timer
 // app.use("/api/exams/timer/", addExamTime)
 // app.use("/api/exams/timer/", getExamsTime)
