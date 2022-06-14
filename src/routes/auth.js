@@ -5,7 +5,7 @@ const router = express.Router()
 
 const auth = new Auth()
 
-export const registerUser = router.post("/register", (req, res) => {
+router.post("/register", (req, res) => {
     const payload = req.body;
 
     if (Object.entries(payload).length === 0) {
@@ -13,10 +13,9 @@ export const registerUser = router.post("/register", (req, res) => {
     }
 
     return auth.registerUser(res, payload)
-
 })
 
-export const loginUser = router.post("/login", (req, res) => {
+router.post("/login", (req, res) => {
     const payload = req.body;
 
     if (Object.entries(payload).length === 0) {
@@ -26,3 +25,6 @@ export const loginUser = router.post("/login", (req, res) => {
     return auth.loginUser(res, payload)
 
 })
+
+
+export default router

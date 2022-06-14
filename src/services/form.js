@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client"
 
 const prismaDB = new PrismaClient()
 
-export default class Tasks {
+export default class TemplateForm {
 
     async add(res, payload) {
         if (res === undefined) {
@@ -14,7 +14,7 @@ export default class Tasks {
 
         if (Object.entries(payload).length > 0) {
 
-            const { title, description, userId, collectionId } = payload;
+            const { title, description, userId, templateId } = payload;
 
             if (title === undefined || title === "") {
                 return sendResponse(res, 400, true, "title cant be blank.")
@@ -25,8 +25,8 @@ export default class Tasks {
             if (userId === undefined || userId === "") {
                 return sendResponse(res, 400, true, "userId cant be empty.")
             }
-            if (collectionId === undefined || collectionId === "") {
-                return sendResponse(res, 400, true, "collectionId cant be empty.")
+            if (templateId === undefined || templateId === "") {
+                return sendResponse(res, 400, true, "templateId cant be empty.")
             }
 
             // check if user with that ID is valid

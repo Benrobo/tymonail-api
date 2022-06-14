@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client"
 
 const prismaDB = new PrismaClient()
 
-export default class Collections {
+export default class Templates {
 
     async create(res, payload) {
         if (res === undefined) {
@@ -14,10 +14,10 @@ export default class Collections {
 
         if (Object.entries(payload).length > 0) {
 
-            const { title, userId, color } = payload;
+            const { name, userId } = payload;
 
-            if (title === undefined || title === "") {
-                return sendResponse(res, 400, true, "title cant be blank.")
+            if (name === undefined || name === "") {
+                return sendResponse(res, 400, true, "name cant be blank.")
             }
             if (userId === undefined || userId === "") {
                 return sendResponse(res, 400, true, "userId cant be empty.")
@@ -31,34 +31,33 @@ export default class Collections {
             })
 
             if (userExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to add collection, user doesnt exist with that ID.")
+                return sendResponse(res, 404, true, "Failed to create template, user doesnt exist with that ID.")
             }
 
             try {
-                const collectionData = {
+                const templateData = {
                     id: genId(),
+                    name,
                     userId,
-                    title,
-                    color
                 }
 
-                await prismaDB.collections.create({ data: collectionData })
+                await prismaDB.templates.create({ data: templateData })
 
-                const allCollections = await prismaDB.collections.findMany({
+                const allTemp = await prismaDB.templates.findMany({
                     where: {
                         userId
                     }
                 })
 
 
-                return sendResponse(res, 200, false, "Collection successfully created.", allCollections)
+                return sendResponse(res, 200, false, "Templates successfully created.", allTemp)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }
         }
     }
 
-    async getCollections(res, payload) {
+    async getTemplatess(res, payload) {
         if (res === undefined) {
             throw new Error("Expected res object but got undefined")
         }
@@ -79,30 +78,29 @@ export default class Collections {
             })
 
             if (userExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to add collection, user doesnt exist with that ID.")
+                return sendResponse(res, 404, true, "Failed to get templates, user doesnt exist with that ID.")
             }
 
             try {
 
-                const allCollections = await prismaDB.collections.findMany({
-                    where: {
-                        userId
-                    }
-                })
+                // const allTemplates = await prismaDB.templates.findMany({
+                //     where: {
+                //         userId
+                //     }
+                // })
 
-                const allTasks = await prismaDB.tasks.findMany({
+                const allTemp = await prismaDB.templates.findMany({
                     where: {
                         userId
                     }
                 })
 
                 const packedData = {
-                    collections: allCollections,
-                    tasks: allTasks
+                    templates: allTemp
                 }
 
 
-                return sendResponse(res, 200, false, "fetching collections successfully created.", packedData)
+                return sendResponse(res, 200, false, "fetching templates successfully created.", packedData)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }

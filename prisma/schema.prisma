@@ -21,18 +21,20 @@ model User {
 
 model Templates {
   id        String   @id
-  title     String
-  tmp_id    String   @unique
-  userId    User     @relation(fields: [id], references: [id])
+  name     String
+  userId    String
+  users    User     @relation(fields: [userId], references: [id])
   form      Form?
   createdAt DateTime @default(now())
+
+  @@map(name: "templates")
 }
 
 model Form {
   id         String    @id
-  formId     String    @unique
+  templateId     String    @unique
   userId     String
-  templateId Templates @relation(fields: [id], references: [tmp_id])
+  templates Templates @relation(fields: [templateId], references: [id])
   profileImg String?
   username   String
   userCareer String?
