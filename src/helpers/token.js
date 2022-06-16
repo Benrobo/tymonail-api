@@ -17,3 +17,24 @@ export function genRefreshToken(payload) {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: "1yr" });
 }
 
+export const decodeJwt = (token = "") => {
+    let res = {}
+    if (token === "" || token === undefined) {
+        res.id = null;
+        res.message = "expected accessToken for decoding, but got none"
+        return res
+    }
+
+
+    const decoded = jwt.decode(token);
+
+    if (decoded?.id === undefined) {
+        res.id = decoded?.id;
+        res.message = "Invalid JWT token."
+        return res
+    }
+
+    res.id = decoded?.id;
+    res.message = "success"
+    return res
+}

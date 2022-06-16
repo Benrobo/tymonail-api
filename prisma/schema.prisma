@@ -24,7 +24,8 @@ model Templates {
   name      String
   userId    String
   users     User     @relation(fields: [userId], references: [id])
-  form      Form?
+  form      Form  @relation(fields: [id], references: [templateId])  
+  feedbacks Feedbacks[]
   createdAt DateTime @default(now())
 
   @@map(name: "templates")
@@ -40,8 +41,23 @@ model Form {
   username   Boolean?  @default(dbgenerated("false"))
   userCareer Boolean?  @default(dbgenerated("false"))
   ratings    Boolean?  @default(dbgenerated("true"))
-  templates  Templates @relation(fields: [templateId], references: [id])
+  templates  Templates? 
 
   // @@id([id, collectionId])
   @@map(name: "form")
+}
+
+model Feedbacks {
+  id         String    @id
+  feedbackId String    @unique
+  templateId String    @unique
+  userId     String    @unique
+  message    String
+  name String
+  ratings String
+  profileImg Boolean?  @default(dbgenerated("false"))
+  templates  Templates @relation(fields: [feedbackId], references: [id])  
+
+  // @@id([id, collectionId])
+  @@map(name: "feedback")
 }

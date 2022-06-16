@@ -83,6 +83,7 @@ export default class TemplateForm {
 
                 return sendResponse(res, 200, false, "Template Form successfully updated.", templateForm)
             } catch (err) {
+                b
                 return sendResponse(res, 500, true, err.message)
             }
         }

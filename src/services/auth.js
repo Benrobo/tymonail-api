@@ -1,6 +1,6 @@
 import sendResponse from "../helpers/response";
 import { compareHash, generateHash, genId } from "../helpers/util";
-import { genAccessToken, genRefreshToken } from "../helpers/token";
+import { decodeJwt, genAccessToken, genRefreshToken } from "../helpers/token";
 import { PrismaClient } from "@prisma/client"
 
 
@@ -119,6 +119,57 @@ export default class Auth {
                     return sendResponse(res, 500, true, err.message)
                 }
             }
+        }
+    }
+
+    async refreshToken(res, payload) {
+        if (res === undefined) {
+            throw new Error("Expected res object but got undefined")
+        }
+
+        if (Object.entries(payload).length > 0) {
+
+            const { token } = payload;
+
+            if (token === undefined) {
+                return sendResponse(res, 400, true, "token cant be blank.")
+            }
+
+            const tokendecode = decodeJwt(token);
+
+            if (tokendecode.id === null || tokendecode.id === undefined) {
+                return console.error(tokendecode.message)
+            }
+
+            const { id } = tokendecode;
+
+            // check if user with this id exists
+            const result = await prismaDB.user.findMany({
+                where: {
+                    id
+                }
+            })
+
+            if (result.length === 0) {
+                return sendResponse(res, 404, true, `refreshing token failed: `)
+            }
+
+            const userData = await prismaDB.user.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if (userData === null) {
+                return sendResponse(res, 404, true, `refreshing token failed: user with id: ${id} was not found.`)
+            }
+
+            const { refreshToken } = userData;
+            const data = {
+                token: refreshToken
+            }
+
+            return sendResponse(res, 200, false, "token successfully refreshed.", data)
         }
     }
 }

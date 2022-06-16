@@ -26,5 +26,16 @@ router.post("/login", (req, res) => {
 
 })
 
+router.post("/refresh", (req, res) => {
+    const payload = req.body;
+
+    if (Object.entries(payload).length === 0) {
+        return sendResponse(res, 500, true, "refreshing of token failed: expected valid payload")
+    }
+
+    return auth.refreshToken(res, payload)
+
+})
+
 
 export default router

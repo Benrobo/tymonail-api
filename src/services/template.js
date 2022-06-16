@@ -5,6 +5,16 @@ import { PrismaClient } from "@prisma/client"
 
 const prismaDB = new PrismaClient()
 
+const generateTmpId = (count) => {
+    const data = "0123456789abcdefgh".split("")
+    let id = ""
+    for (let i = 0; i < count; i++) {
+        let rand = Math.floor(Math.random() * data.length)
+        id += data[rand]
+    }
+    return id
+}
+
 export default class Templates {
 
     async create(res, payload) {
@@ -36,7 +46,7 @@ export default class Templates {
 
             try {
 
-                const templateId = genId()
+                const templateId = `temp_${generateTmpId()}`
 
                 const templateData = {
                     id: templateId,
