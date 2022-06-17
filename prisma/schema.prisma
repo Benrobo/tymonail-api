@@ -24,8 +24,6 @@ model Templates {
   name      String
   userId    String
   users     User     @relation(fields: [userId], references: [id])
-  form      Form  @relation(fields: [id], references: [templateId])  
-  feedbacks Feedbacks[]
   createdAt DateTime @default(now())
 
   @@map(name: "templates")
@@ -34,15 +32,13 @@ model Templates {
 model Form {
   id         String    @id
   templateId String    @unique
-  userId     String    @unique
+  userId     String   
   heading    String?
   subHeading String?
   profileImg Boolean?  @default(dbgenerated("false"))
   username   Boolean?  @default(dbgenerated("false"))
   userCareer Boolean?  @default(dbgenerated("false"))
   ratings    Boolean?  @default(dbgenerated("true"))
-  templates  Templates? 
-
   // @@id([id, collectionId])
   @@map(name: "form")
 }
@@ -50,14 +46,15 @@ model Form {
 model Feedbacks {
   id         String    @id
   feedbackId String    @unique
-  templateId String    @unique
-  userId     String    @unique
+  templateId String    
+  userId     String    
+  isActive Boolean @default(dbgenerated("false"))
   message    String
   name String
   ratings String
-  profileImg Boolean?  @default(dbgenerated("false"))
-  templates  Templates @relation(fields: [feedbackId], references: [id])  
-
+  profileImg String?  @default(dbgenerated("false"))
+  userCareer String? 
+  createdAt DateTime @default(now())
   // @@id([id, collectionId])
-  @@map(name: "feedback")
+  @@map(name: "feedbacks")
 }

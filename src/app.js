@@ -9,6 +9,7 @@ import { customlimiter } from "./middlewares/rateLimiting"
 import authenticateUsers from "./routes/auth"
 import templatesRoute from "./routes/templates"
 import templatesFormRoute from './routes/form'
+import feedbackRoutes from './routes/feedbacks'
 
 
 const app = express()
@@ -28,10 +29,9 @@ app.use("/api/templates", templatesRoute)
 // template form
 app.use("/api/templates/form", templatesFormRoute)
 
-// // exams timer
-// app.use("/api/exams/timer/", addExamTime)
-// app.use("/api/exams/timer/", getExamsTime)
-// app.use("/api/exams/timer/", deleteExamTime)
+// feedbacks
+app.use("/api/feedbacks", feedbackRoutes)
+
 
 
 const PORT = process.env.PORT || 8080

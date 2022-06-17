@@ -5,32 +5,31 @@ import { PrismaClient } from "@prisma/client"
 
 const prismaDB = new PrismaClient()
 
-const generateTmpId = (count = 5) => {
-    const data = "0123456789abcdefgh".split("")
-    let id = ""
-    for (let i = 0; i < count; i++) {
-        let rand = Math.floor(Math.random() * data.length)
-        id += data[rand]
-    }
-    return id
-}
+export default class FeedBacks {
 
-export default class Templates {
-
-    async create(res, payload) {
+    async add(res, payload) {
         if (res === undefined) {
             throw new Error("Expected res object but got undefined")
         }
 
         if (Object.entries(payload).length > 0) {
 
-            const { name, userId } = payload;
+            const { name, ratings, message, templateId, userId } = payload;
 
             if (name === undefined || name === "") {
                 return sendResponse(res, 400, true, "name cant be blank.")
             }
             if (userId === undefined || userId === "") {
                 return sendResponse(res, 400, true, "userId cant be empty.")
+            }
+            if (templateId === undefined || templateId === "") {
+                return sendResponse(res, 400, true, "templateId cant be empty.")
+            }
+            if (ratings === undefined || ratings === "") {
+                return sendResponse(res, 400, true, "ratings cant be empty.")
+            }
+            if (message === undefined || message === "") {
+                return sendResponse(res, 400, true, "message cant be empty.")
             }
 
             // check if user with that ID is valid
@@ -41,53 +40,61 @@ export default class Templates {
             })
 
             if (userExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to create template, user doesnt exist with that ID.")
+                return sendResponse(res, 404, true, "Failed to add feedback, something went wrong with the userId added.")
+            }
+
+            // check if template exists
+            const tempExists = await prismaDB.templates.findMany({
+                where: {
+                    id: templateId
+                }
+            })
+
+            if (tempExists.length === 0) {
+                return sendResponse(res, 404, true, "Failed to add feedback, provided template doesnt exists within our record.")
             }
 
             try {
 
-                const templateId = `temp_${generateTmpId(6)}`
-
-                const templateData = {
-                    id: templateId,
-                    name,
-                    userId,
+                const _checkNonProvidedInput = {
+                    profileImg: payload.profileImg === undefined ? "" : payload.profileImg,
+                    userCareer: payload.userCareer === undefined ? "" : payload.userCareer,
                 }
 
-                // create template form data
-                const templateformData = {
+
+                const feedbackData = {
                     id: genId(),
+                    feedbackId: genId(),
                     userId,
                     templateId,
-                    heading: "Feedback Form",
-                    subHeading: "Your feedback is highly appreciated",
-                    profileImg: false,
-                    username: true,
-                    userCareer: false,
-                    ratings: true,
+                    name,
+                    message,
+                    ratings,
+                    profileImg: _checkNonProvidedInput.profileImg,
+                    userCareer: _checkNonProvidedInput.userCareer,
+                    isActive: false
                 }
 
-                await prismaDB.templates.create({ data: templateData })
-                await prismaDB.form.create({ data: templateformData })
+                // insert feedbacks
+                await prismaDB.feedbacks.create({ data: feedbackData })
+                // await prismaDB.
 
-                const allTempData = await prismaDB.templates.findMany({
+                const allFeedbacks = await prismaDB.feedbacks.findMany({
                     where: {
                         userId
-                    },
-                    include: {
-                        form: true
                     }
                 })
 
 
-                return sendResponse(res, 200, false, "Templates successfully created.", allTempData)
+                return sendResponse(res, 200, false, "feedback added successfully.", allFeedbacks)
             } catch (err) {
+                console.log(err);
                 return sendResponse(res, 500, true, err.message)
             }
         }
     }
 
-    async getTemplatess(res, payload) {
+    async getFeedbacks(res, payload) {
         if (res === undefined) {
             throw new Error("Expected res object but got undefined")
         }
