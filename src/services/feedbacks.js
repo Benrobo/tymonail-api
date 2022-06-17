@@ -5,6 +5,18 @@ import { PrismaClient } from "@prisma/client"
 
 const prismaDB = new PrismaClient()
 
+
+// This is applicable for getFeedbacks() method
+/**
+ * type : feedback_type
+ * @param ( user | non-user )
+ * 
+ * if type === "non-user"
+ *      templateId is required.
+ * if type === "user"
+ *      templateId is not required. userId is used
+ */
+
 export default class FeedBacks {
 
     async add(res, payload) {
@@ -101,11 +113,24 @@ export default class FeedBacks {
 
         if (Object.entries(payload).length > 0) {
 
-            const { userId } = payload;
+
+
+            const validFeedbackType = ["user", "non-user"];
+            const { userId, templateId, type } = payload;
+
+            const isValidType = validFeedbackType.includes(type) ? true : false;
+            let feedbackResult = null;
 
             if (userId === undefined || userId === "") {
                 return sendResponse(res, 400, true, "userId cant be empty.")
             }
+            if (!isValidType) {
+                return sendResponse(res, 404, true, `failed to get feedbacks, invalid type "${type}".`)
+            }
+            if ((isValidType && type === "non-user") && (templateId === undefined || templateId === "")) {
+                return sendResponse(res, 404, true, "failed to get feedbacks, template ID is invalid or missing.")
+            }
+
 
             // check if user with that ID is valid
             const userExists = await prismaDB.user.findMany({
@@ -119,18 +144,36 @@ export default class FeedBacks {
             }
 
             try {
+                // check if template exists based on ID
+                if (isValidType && type === "non-user") {
+                    const allTempData = await prismaDB.templates.findMany({
+                        where: {
+                            id: templateId
+                        }
+                    })
 
-                const allTempData = await prismaDB.templates.findMany({
+                    if (allTempData.length === 0) {
+                        return sendResponse(res, 404, true, "Failed fetching feedbacks, template ID doesnt exists.")
+                    }
+
+                    // if all is well
+                    feedbackResult = await prismaDB.feedbacks.findMany({
+                        where: {
+                            templateId
+                        }
+                    })
+
+                    return sendResponse(res, 200, false, "feedbacks successfully fetched.", feedbackResult)
+                }
+
+
+                feedbackResult = await prismaDB.feedbacks.findMany({
                     where: {
                         userId
-                    },
-                    include: {
-                        form: true
                     }
                 })
 
-
-                return sendResponse(res, 200, false, "fetching templates successfully created.", allTempData)
+                return sendResponse(res, 200, false, "fetching templates successfully created.", feedbackResult)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }
