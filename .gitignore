@@ -12,3 +12,5 @@
 # prisma schema/migration
 
 /prisma/migrations
+
+/test.js
