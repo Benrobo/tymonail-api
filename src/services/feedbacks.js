@@ -84,7 +84,7 @@ export default class FeedBacks {
                     ratings,
                     profileImg: _checkNonProvidedInput.profileImg,
                     userCareer: _checkNonProvidedInput.userCareer,
-                    isActive: false
+                    published: false
                 }
 
                 // insert feedbacks
@@ -174,6 +174,80 @@ export default class FeedBacks {
                 })
 
                 return sendResponse(res, 200, false, "fetching templates successfully created.", feedbackResult)
+            } catch (err) {
+                return sendResponse(res, 500, true, err.message)
+            }
+        }
+    }
+
+    async publishFeedback(res, payload) {
+        if (res === undefined) {
+            throw new Error("Expected res object but got undefined")
+        }
+
+        if (Object.entries(payload).length > 0) {
+
+            const { userId, id, published } = payload;
+
+            if (userId === undefined || userId === "") {
+                return sendResponse(res, 400, true, "userId cant be empty.")
+            }
+            if (id === undefined || id === "") {
+                return sendResponse(res, 400, true, "feedback id cant be empty.")
+            }
+            if (published === undefined || published === "") {
+                return sendResponse(res, 400, true, "feedback published state cant be empty.")
+            }
+
+            // check published state
+            const isValidPublished = typeof published !== "boolean" ? true : false;
+
+            if (isValidPublished) {
+                return sendResponse(res, 400, true, "invalid feedback published state.")
+            }
+
+            try {
+
+                // check if user with that ID is valid
+                const userExists = await prismaDB.user.findMany({
+                    where: {
+                        id: userId
+                    }
+                })
+
+                // check if feedback exists based on ID
+                const feedbackExists = await prismaDB.feedbacks.findMany({
+                    where: {
+                        feedbackId: id
+                    }
+                })
+
+                if (userExists.length === 0) {
+                    return sendResponse(res, 404, true, "failed to publish feedback, user doesnt exist with that ID.")
+                }
+
+                if (feedbackExists.length === 0) {
+                    return sendResponse(res, 404, true, "failed to publish. feedback with this id doesnt exists.")
+                }
+
+                // delete feedback with that ID
+                await prismaDB.feedbacks.update({
+                    where: {
+                        feedbackId: id
+                    },
+                    data: {
+                        published
+                    }
+                })
+
+
+                const feedbackResult = await prismaDB.feedbacks.findMany({
+                    where: {
+                        userId
+                    }
+                })
+
+                return sendResponse(res, 200, false, "feedback successfully deleted.", feedbackResult)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }

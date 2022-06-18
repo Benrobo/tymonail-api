@@ -48,7 +48,7 @@ model Feedbacks {
   feedbackId String    @unique
   templateId String    
   userId     String    
-  isActive Boolean @default(dbgenerated("false"))
+  published Boolean @default(dbgenerated("false"))
   message    String
   name String
   ratings String

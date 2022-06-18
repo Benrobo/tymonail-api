@@ -39,6 +39,17 @@ router.post("/get", (req, res) => {
 
 })
 
+router.put("/publish", (req, res) => {
+    const payload = req.body;
+
+    if (Object.entries(payload).length === 0) {
+        return sendResponse(res, 500, true, "publishing of feedbacks failed: expected valid payload")
+    }
+
+    return Feedback.publishFeedback(res, payload)
+
+})
+
 router.delete("/delete", isLoggedIn, (req, res) => {
     const payload = req.body;
 
