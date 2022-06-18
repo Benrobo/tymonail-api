@@ -179,4 +179,67 @@ export default class FeedBacks {
             }
         }
     }
+
+    async delete(res, payload) {
+        if (res === undefined) {
+            throw new Error("Expected res object but got undefined")
+        }
+
+        if (Object.entries(payload).length > 0) {
+
+            const { userId, id } = payload;
+
+
+            if (userId === undefined || userId === "") {
+                return sendResponse(res, 400, true, "userId cant be empty.")
+            }
+            if (id === undefined || id === "") {
+                return sendResponse(res, 400, true, "feedback id cant be empty.")
+            }
+
+
+            try {
+
+                // check if user with that ID is valid
+                const userExists = await prismaDB.user.findMany({
+                    where: {
+                        id: userId
+                    }
+                })
+
+                // check if feedback exists based on ID
+                const feedbackExists = await prismaDB.feedbacks.findMany({
+                    where: {
+                        feedbackId: id
+                    }
+                })
+
+                if (userExists.length === 0) {
+                    return sendResponse(res, 404, true, "Failed to delete feedback, user doesnt exist with that ID.")
+                }
+
+                if (feedbackExists.length === 0) {
+                    return sendResponse(res, 404, true, "failed to delete. feedback with this id doesnt exists.")
+                }
+
+                // delete feedback with that ID
+                await prismaDB.feedbacks.delete({
+                    where: {
+                        feedbackId: id
+                    }
+                })
+
+
+                const feedbackResult = await prismaDB.feedbacks.findMany({
+                    where: {
+                        userId
+                    }
+                })
+
+                return sendResponse(res, 200, false, "feedback successfully deleted.", feedbackResult)
+            } catch (err) {
+                return sendResponse(res, 500, true, err.message)
+            }
+        }
+    }
 }
