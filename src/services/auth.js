@@ -151,7 +151,7 @@ export default class Auth {
             })
 
             if (result.length === 0) {
-                return sendResponse(res, 404, true, `refreshing token failed: `)
+                return sendResponse(res, 404, true, `refreshing token failed: user with this token doesnt exists. `)
             }
 
             const userData = await prismaDB.user.findUnique({

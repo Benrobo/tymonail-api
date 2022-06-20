@@ -73,9 +73,6 @@ export default class Templates {
                 const allTempData = await prismaDB.templates.findMany({
                     where: {
                         userId
-                    },
-                    include: {
-                        form: true
                     }
                 })
 
@@ -116,9 +113,6 @@ export default class Templates {
                 const allTempData = await prismaDB.templates.findMany({
                     where: {
                         userId
-                    },
-                    include: {
-                        form: true
                     }
                 })
 
