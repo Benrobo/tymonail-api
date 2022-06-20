@@ -37,7 +37,48 @@ export default class TemplateForm {
             // check if template with that ID exists for that user
             const templateExists = await prismaDB.templates.findMany({
                 where: {
-                    userId
+                    id: templateId
+                }
+            })
+
+            if (templateExists.length === 0) {
+                return sendResponse(res, 404, true, "failed fetching template form, no template found for this user.")
+            }
+
+
+            try {
+
+                // filter templates based on userId
+                const templateForm = await prismaDB.form.findMany({
+                    where: {
+                        templateId
+                    }
+                })
+
+                return sendResponse(res, 200, false, "templated form fetched successfully", templateForm)
+            } catch (err) {
+                return sendResponse(res, 500, true, err.message)
+            }
+        }
+    }
+
+    async getFeedbackForm(res, payload) {
+        if (res === undefined) {
+            throw new Error("Expected res object but got undefined")
+        }
+
+        if (Object.entries(payload).length > 0) {
+
+            const { templateId } = payload;
+
+            if (templateId === undefined || templateId === "") {
+                return sendResponse(res, 400, true, "templateId cant be empty.")
+            }
+
+            // check if template with that ID exists for that user
+            const templateExists = await prismaDB.templates.findMany({
+                where: {
+                    id: templateId
                 }
             })
 

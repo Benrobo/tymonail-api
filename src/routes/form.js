@@ -9,7 +9,7 @@ const router = express.Router()
 
 const TmpForm = new TemplateForm()
 
-router.post("/get", isLoggedIn, (req, res) => {
+router.post("/get", (req, res) => {
     const payload = req.body;
 
     if (Object.entries(payload).length === 0) {
@@ -17,6 +17,17 @@ router.post("/get", isLoggedIn, (req, res) => {
     }
 
     return TmpForm.get(res, payload)
+
+})
+
+router.post("/getFeedbackForm", (req, res) => {
+    const payload = req.body;
+
+    if (Object.entries(payload).length === 0) {
+        return sendResponse(res, 500, true, "fetching of template feedback form failed: expected valid payload")
+    }
+
+    return TmpForm.getFeedbackForm(res, payload)
 
 })
 

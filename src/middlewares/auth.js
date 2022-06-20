@@ -14,6 +14,6 @@ export function isLoggedIn(req, res, next) {
         next()
     } catch (e) {
         // console.log(e)
-        return res.status(500).json({ message: "Invalid token", error: true })
+        return res.status(403).json({ message: "Invalid token", error: true })
     }
 }

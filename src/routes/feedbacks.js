@@ -17,7 +17,7 @@ router.get("/get", (req, res) => {
 
 })
 
-router.post("/add", isLoggedIn, (req, res) => {
+router.post("/add", (req, res) => {
     const payload = req.body;
 
     if (Object.entries(payload).length === 0) {
