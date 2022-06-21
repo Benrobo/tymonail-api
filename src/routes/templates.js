@@ -29,4 +29,15 @@ router.post("/get", isLoggedIn, (req, res) => {
 
 })
 
+router.delete("/delete", isLoggedIn, (req, res) => {
+    const payload = req.body;
+
+    if (Object.entries(payload).length === 0) {
+        return sendResponse(res, 500, true, "deleting of template failed: expected valid payload")
+    }
+
+    return Template.delete(res, payload)
+
+})
+
 export default router

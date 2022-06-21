@@ -113,8 +113,6 @@ export default class FeedBacks {
 
         if (Object.entries(payload).length > 0) {
 
-
-
             const validFeedbackType = ["user", "non-user"];
             const { userId, templateId, type } = payload;
 
@@ -140,7 +138,7 @@ export default class FeedBacks {
             })
 
             if (userExists.length === 0) {
-                return sendResponse(res, 404, true, "Failed to get templates, user doesnt exist with that ID.")
+                return sendResponse(res, 404, true, "Failed to get feedbacks, user doesnt exist with that ID.")
             }
 
             try {
@@ -173,7 +171,7 @@ export default class FeedBacks {
                     }
                 })
 
-                return sendResponse(res, 200, false, "fetching templates successfully created.", feedbackResult)
+                return sendResponse(res, 200, false, "fetching feedbacks successfully created.", feedbackResult)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }
@@ -247,7 +245,7 @@ export default class FeedBacks {
                     }
                 })
 
-                return sendResponse(res, 200, false, "feedback successfully deleted.", feedbackResult)
+                return sendResponse(res, 200, false, "feedback successfully published.", feedbackResult)
             } catch (err) {
                 return sendResponse(res, 500, true, err.message)
             }
