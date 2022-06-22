@@ -155,11 +155,14 @@ export default class FeedBacks {
                     }
 
                     // if all is well
-                    feedbackResult = await prismaDB.feedbacks.findMany({
+                    // first: get feedback based on userId
+                    const feedbackByUserId = await prismaDB.feedbacks.findMany({
                         where: {
-                            templateId
+                            userId
                         }
                     })
+                    // second: filter the result based on templateId
+                    feedbackResult = feedbackByUserId.length > 0 ? feedbackByUserId.filter(temp => temp.templateId === templateId) : []
 
                     return sendResponse(res, 200, false, "feedbacks successfully fetched.", feedbackResult)
                 }

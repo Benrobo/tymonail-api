@@ -13,7 +13,7 @@ export const getAllUsers = router.post("/user", (req, res) => {
     const payload = req.body;
 
     if (Object.entries(payload).length === 0) {
-        return sendResponse(res, 500, true, "Fetching user failed: expected valid payload")
+        return sendResponse(res, 500, true, "Fetching user failed: expected valid payload.")
     }
 
     return auth.getUser(res, payload)
