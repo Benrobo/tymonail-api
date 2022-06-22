@@ -6,7 +6,7 @@ import { customlimiter } from "./middlewares/rateLimiting"
 // import { NODE_ENV } from "./config"
 // import schemas from "./graphQl/schemas"
 // import { AUTH_CLIENT_ID, MAX_API_REQUEST } from "./config"
-import authenticateUsers from "./routes/auth"
+import authenticateUsers, { getAllUsers, getUser } from "./routes/auth"
 import templatesRoute from "./routes/templates"
 import templatesFormRoute from './routes/form'
 import feedbackRoutes from './routes/feedbacks'
@@ -22,6 +22,9 @@ app.use(customlimiter)
 
 // user
 app.use("/api/auth", authenticateUsers)
+// fetching users
+app.use("/api", getUser)
+app.use("/api", getAllUsers)
 
 // templates
 app.use("/api/templates", templatesRoute)

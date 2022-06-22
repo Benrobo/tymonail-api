@@ -5,6 +5,21 @@ const router = express.Router()
 
 const auth = new Auth()
 
+export const getUser = router.get("/users", (req, res) => {
+    return auth.getAllUsers(res)
+})
+
+export const getAllUsers = router.post("/user", (req, res) => {
+    const payload = req.body;
+
+    if (Object.entries(payload).length === 0) {
+        return sendResponse(res, 500, true, "Fetching user failed: expected valid payload")
+    }
+
+    return auth.getUser(res, payload)
+})
+
+
 router.post("/register", (req, res) => {
     const payload = req.body;
 

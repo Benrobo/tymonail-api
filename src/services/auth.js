@@ -8,6 +8,51 @@ const prismaDB = new PrismaClient()
 
 export default class Auth {
 
+    async getAllUsers(res) {
+        if (res === undefined) {
+            throw new Error("Expected res object but got undefined")
+        }
+
+        try {
+            const allUsers = await prismaDB.user.findMany()
+
+            return sendResponse(res, 200, false, "user fetched successfull.", allUsers)
+        } catch (err) {
+            return sendResponse(res, 500, true, err.message)
+        }
+    }
+
+    async getUser(res, payload) {
+        if (res === undefined) {
+            throw new Error("Expected res object but got undefined")
+        }
+
+        if (Object.entries(payload).length > 0) {
+
+            const { userId } = payload;
+
+            if (userId === undefined) {
+                return sendResponse(res, 400, true, "userId cant be blank.")
+            }
+
+            try {
+                const result = await prismaDB.user.findMany({
+                    where: {
+                        id: userId
+                    },
+                    include: {
+                        templates: true
+                    }
+                })
+
+                return sendResponse(res, 200, false, "successfull.", result)
+            } catch (err) {
+                console.log(err);
+                return sendResponse(res, 500, true, err.message)
+            }
+        }
+    }
+
     async registerUser(res, payload) {
         if (res === undefined) {
             throw new Error("Expected res object but got undefined")
