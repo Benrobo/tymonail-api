@@ -20,6 +20,12 @@ app.use(bodyParser.json({ limit: "50mb" }))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(customlimiter)
 
+app.get("/", (req, res) => {
+    return res.send(`
+        <p>Hi There, welcome to tymonial.</p>
+    `)
+})
+
 // user
 app.use("/api/auth", authenticateUsers)
 // fetching users
