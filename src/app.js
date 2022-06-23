@@ -13,6 +13,7 @@ import feedbackRoutes from './routes/feedbacks'
 
 
 const app = express()
+const route = express.Router()
 
 // Middlewares
 app.use(cors())
@@ -20,7 +21,7 @@ app.use(bodyParser.json({ limit: "50mb" }))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(customlimiter)
 
-app.get("/", (req, res) => {
+route.get("/", (req, res) => {
     return res.send(`
         <p>Hi There, welcome to tymonial.</p>
     `)
