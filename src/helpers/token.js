@@ -7,7 +7,7 @@ export function genAccessToken(payload) {
         return this.Error("Access token requires a payload field but got none");
     }
 
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: "60min" });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: "10h" });
 }
 
 export function genRefreshToken(payload) {
