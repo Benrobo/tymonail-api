@@ -4,7 +4,7 @@
   "description": "",
   "main": "./src/app.js",
   "scripts": {
-    "clean": "rmdir /s /q build",
+    "clean": "rm -r -d build",
     "build": "npm run clean && babel src/app.js --out-dir build",
     "start": "node build/index.js",
     "dev": "nodemon --exec babel-node src/app.js",
