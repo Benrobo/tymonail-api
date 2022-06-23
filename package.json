@@ -4,11 +4,12 @@
   "description": "",
   "main": "./src/app.js",
   "scripts": {
-    "clean": "rm -r -d build",
+    "clean": "rmdir /s /q build",
     "build": "npm run clean && babel src/app.js --out-dir build",
     "start": "node build/app.js",
     "dev": "nodemon --exec babel-node src/app.js",
     "prod": "npm run build && npm start",
+    "test-prod": "babel-node src/app.js",
     "prisma-migrate": "npx prisma migrate dev --name init"
   },
   "keywords": [],
