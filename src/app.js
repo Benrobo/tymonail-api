@@ -2,10 +2,6 @@ import express from "express"
 import bodyParser from "body-parser"
 import cors from "cors"
 import { customlimiter } from "./middlewares/rateLimiting"
-// import { graphqlHTTP } from "express-graphql"
-// import { NODE_ENV } from "./config"
-// import schemas from "./graphQl/schemas"
-// import { AUTH_CLIENT_ID, MAX_API_REQUEST } from "./config"
 import authenticateUsers, { getAllUsers, getUser } from "./routes/auth"
 import templatesRoute from "./routes/templates"
 import templatesFormRoute from './routes/form'
@@ -21,11 +17,9 @@ app.use(bodyParser.json({ limit: "50mb" }))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(customlimiter)
 
-route.get("/", (req, res) => {
-    return res.send(`
-        <p>Hi There, welcome to tymonial.</p>
-    `)
-})
+const homeRoute = route.get("/", (req, res) => res.send(`<h3>Hi There, welcome to tymonial.</h3>`))
+
+app.use("/", homeRoute)
 
 // user
 app.use("/api/auth", authenticateUsers)
@@ -41,8 +35,6 @@ app.use("/api/templates/form", templatesFormRoute)
 
 // feedbacks
 app.use("/api/feedbacks", feedbackRoutes)
-
-
 
 const PORT = process.env.PORT || 8080
 
