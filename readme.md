@@ -1,19 +1,15 @@
-# Tymonial GraphQL Backend
+# Tymonial Backend API.
 
-Start your backend api services with minimal efforts using `Nodejs` `Expressjs` `Postgresql` `Prisma ORM`
-
+The backend api which powers [Tymonial](https://tymonial.vercel.app).
 # Setup
 
 - ## Clone the repo
 
 ```js
-    git clone https://github.com/benrobo/trakka.git
+    git clone https://github.com/Benrobo/tymonail-api.git
 ```
 
 - ## Install all dependencies
-
-Trakka is made up of both `client (App)` and `Server (API)`. Move into this folders and install all dependencies.
-
 ```js
     // if npm is default package manager
     npm install
@@ -25,15 +21,16 @@ Trakka is made up of both `client (App)` and `Server (API)`. Move into this fold
 - ## Create a .env file. Paste and update the created .env file to the variables found in `.env.development`
 
 ```js
-    DATABASE_URL="postgresql://postgres:1234@localhost:5432/trakka?schema=public"
+    DATABASE_URL="postgresql://postgres:1234@localhost:5432/tymonial?schema=public&connect-timeout=300"
 
-    JWT_SECRET=""
+    JWT_SECRET="some-secret-here"
 
     MAX_API_REQUEST_COUNT = 500
 
+    NODE_ENV="development"
 ```
 
-## Trakka kit uses `Prisma ORM` for managing `Postgresql Database`. So it compulsory you have postgresql installed, if not follow the link below on setting up postgresql and prisma orm on your pc
+## Tymonial kit uses `Prisma ORM` for managing `Postgresql Database`. So it compulsory you have postgresql installed, if not follow the link below on setting up postgresql and prisma orm on your pc
 
 - ## [Postgresql Setup](https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql/)
 
@@ -53,24 +50,87 @@ Trakka is made up of both `client (App)` and `Server (API)`. Move into this fold
 ## Congratulation, you can now start exploring and adding other features 🚀.
 
 
-## Run `API` and `App`
+## Start local Server.
 
 ```bash
-    # start client development server
-    documents/projects/trakka/app~$ npm start
-
     # start api development server
     documents/projects/trakka/api~$ npm run dev
 ```
 
-### This repo is open for contribution.
+### Api EndPoints.
+Here are some API endpoint which could be called `localy` on your computer.
 
-# Spinning up a local cockroach cluster.
+- [x] Registeration:
+    - `/api/auth/register`.
+    - `method`: `POST`.
+    - `Body`: `username`, `email`, `password`.
+    - `Headers`:
+        - `Authorization`:  `NONE`
 
-```bash
+- [x] Login:
+    - `/api/auth/login`.
+    - `method`: `POST`.
+    - `Body`:  `email`, `password`.
+    - `Headers`:
+        - `Authorization`:  `NONE`
 
- cockroach start-single-node --insecure `
->> --listen-addr=localhost:26257 `
->> --http-addr=localhost:5000
+- [x] getUsers:
+    - `/api/users`.
+    - `method`: `GET`.
+    - `Body`:  `NONE`
+    - `Headers`:
+        - `Authorization`:  `NONE`
 
-```
+- [x] getUser:
+    - `/api/user`.
+    - `method`: `GET`.
+    - `Body`:  `userId`
+    - `Headers`:
+        - `Authorization`:  `AccessToken`
+
+- [x] getTemplates:
+    - `/api/templates/get`.
+    - `method`: `POST`.
+    - `Body`:  `userId`
+    - `Headers`:
+        - `Authorization`:  `AccessToken`
+
+- [x] createTemplate:
+    - `/api/templates/create`.
+    - `method`: `POST`.
+    - `Body`:  `userId`, `name`
+    - `Headers`:
+        - `Authorization`:  `AccessToken`
+
+- [x] deleteTemplate:
+    - `/api/templates/delete`.
+    - `method`: `DELETE`.
+    - `Body`:  `userId`, `name`
+    - `Headers`:
+        - `Authorization`:  `AccessToken`
+
+
+> NOTE , If any issue were encountered when setting up the backend API, kindly create an [ISSUE HERE](https://github.com/Benrobo/tymonail-api/issues). your feedback is highly appreciated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
